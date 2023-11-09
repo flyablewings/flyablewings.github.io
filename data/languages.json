@@ -1,0 +1,26 @@
+[
+  {
+    "id": 0,
+    "label": "usa",
+    "name": "English",
+    "value": "us"
+  },
+  {
+    "id": 1,
+    "label": "thai",
+    "name": "ไทย",
+    "value": "th"
+  },
+  {
+    "id": 2,
+    "label": "japan",
+    "name": "日本語",
+    "value": "jp"
+  },
+  {
+    "id": 3,
+    "label": "russia",
+    "name": "русский",
+    "value": "ru"
+  }
+]
