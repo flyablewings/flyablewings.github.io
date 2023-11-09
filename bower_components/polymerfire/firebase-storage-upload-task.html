@@ -1,4 +1,18 @@
-<html><head><link rel="import" href="../polymer/polymer.html"><link rel="import" href="firebase-storage-behavior.html"><script>(function(){'use strict';/**
+<!--
+@license
+Copyright 2016 Google Inc. All Rights Reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file or at
+https://github.com/firebase/polymerfire/blob/master/LICENSE
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="firebase-storage-behavior.html">
+<script>
+  (function(){
+    'use strict';
+
+    /**
     * The firebase-storage-upload-task element is an easy way to track upload tasks made
     * by the firebase-storage-multiupload or the firebase-storage-ref
     *
@@ -22,28 +36,136 @@
     * `<firebase-storage>` needs some information about how to talk to Firebase.
     * Set this configuration by adding a `<firebase-app>` element anywhere in your
     * app.
-    */Polymer({is:"firebase-storage-upload-task",properties:{/**
+    */
+    Polymer({
+      is: 'firebase-storage-upload-task',
+
+      properties: {
+        /**
         *  The upload task that is being tracked
-        */task:{type:Object,value:null,observer:"_taskChanged"},/**
+        */
+        task: {
+          type: Object,
+          value: null,
+          observer: '_taskChanged'
+        },
+
+        /**
         *  Number of bytes transferred
-        */bytesTransferred:{type:Number,notify:!0},/**
+        */
+        bytesTransferred: {
+          type: Number,
+          notify: true
+        },
+
+        /**
         *  Total number of bytes of the file
-        */totalBytes:{type:Number,notify:!0},/**
+        */
+        totalBytes: {
+          type: Number,
+          notify: true
+        },
+
+        /**
         *  The upload task's state
-        */state:{type:Object,notify:!0},/**
+        */
+        state: {
+          type: Object,
+          notify: true
+        },
+
+        /**
         *  The download url of the file
-        */downloadUrl:{type:String,notify:!0},/**
+        */
+        downloadUrl: {
+          type: String,
+          notify: true
+        },
+
+        /**
         *  The metadata of the file
-        */metadata:{type:Object,notify:!0},/**
+        */
+        metadata: {
+          type: Object,
+          notify: true
+        },
+
+        /**
         *  The firebase storage path of the file
-        */path:{type:String,notify:!0},/**
+        */
+        path: {
+          type: String,
+          notify: true
+        },
+
+        /**
         *  The current snapshot of the task
-        */snapshot:{type:Object,notify:!0}},behaviors:[Polymer.FirebaseStorageBehavior],/**
+        */
+        snapshot: {
+          type: Object,
+          notify: true
+        }
+      },
+
+      behaviors: [
+        Polymer.FirebaseStorageBehavior
+      ],
+
+      /**
       * @override
-      */get zeroValue(){return[]},_updateProperties:function(snapshot){this.state=snapshot.state;this.totalBytes=snapshot.totalBytes;this.bytesTransferred=snapshot.bytesTransferred;this.downloadUrl=snapshot.downloadURL;this.metadata=snapshot.metadata;this.path=snapshot.ref.fullPath;this.snapshot=snapshot},_taskChanged:function(task){this._updateProperties(task.snapshot);task.on(firebase.storage.TaskEvent.STATE_CHANGED,this._updateProperties.bind(this),function(error){this._updateProperties(task.snapshot);this.fire("error",error,{bubble:!1})}.bind(this),function(){this._updateProperties(task.snapshot)}.bind(this))},/**
+      */
+      get zeroValue() {
+        return [];
+      },
+
+      _updateProperties: function(snapshot) {
+        this.state = snapshot.state;
+        this.totalBytes = snapshot.totalBytes;
+        this.bytesTransferred = snapshot.bytesTransferred;
+        this.downloadUrl = snapshot.downloadURL;
+        this.metadata = snapshot.metadata;
+        this.path = snapshot.ref.fullPath;
+        this.snapshot = snapshot;
+      },
+
+      _taskChanged: function(task) {
+        this._updateProperties(task.snapshot);
+        task.on(firebase.storage.TaskEvent.STATE_CHANGED,
+          this._updateProperties.bind(this), function(error) {
+            this._updateProperties(task.snapshot)
+            this.fire('error', error, { bubble: false});
+          }.bind(this), function() {
+            this._updateProperties(task.snapshot)
+          }.bind(this));
+      },
+
+      /**
       *  Cancels the upload
-      */cancel:function(){return this.task?this.task.cancel():new Promise(function(resolve,reject){reject("No task included")})},/**
+      */
+      cancel: function() {
+        return this.task ? this.task.cancel() : new Promise(function(resolve, reject) {
+          reject('No task included')
+        });
+      },
+
+      /**
       *  Resumes a paused upload
-      */resume:function(){return this.task?this.task.resume():new Promise(function(resolve,reject){reject("No task included")})},/**
+      */
+      resume: function() {
+        return this.task ? this.task.resume() : new Promise(function(resolve, reject) {
+          reject('No task included')
+        });
+      },
+
+      /**
       *  Pauses the upload
-      */pause:function(){return this.task?this.task.pause():new Promise(function(resolve,reject){reject("No task included")})}})})();</script></head><body></body></html>
+      */
+      pause: function() {
+        return this.task ? this.task.pause() : new Promise(function(resolve, reject) {
+          reject('No task included')
+        });
+      }
+    });
+  })()
+
+</script>

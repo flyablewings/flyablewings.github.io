@@ -1,4 +1,18 @@
-<html><head><link rel="import" href="../polymer/polymer.html"><link rel="import" href="firebase-storage-behavior.html"><script>(function(){'use strict';/**
+<!--
+@license
+Copyright 2016 Google Inc. All Rights Reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file or at
+https://github.com/firebase/polymerfire/blob/master/LICENSE
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="firebase-storage-behavior.html">
+<script>
+  (function(){
+    'use strict';
+
+    /**
     * The firebase-storage-multiupload element is an easy way to upload files by
     * expose the firebase storage api to the Polymer databinding system.
     *
@@ -73,19 +87,61 @@
     * `<firebase-storage>` needs some information about how to talk to Firebase.
     * Set this configuration by adding a `<firebase-app>` element anywhere in your
     * app.
-    */Polymer({is:"firebase-storage-multiupload",properties:{/**
+    */
+    Polymer({
+      is: 'firebase-storage-multiupload',
+
+      properties: {
+        /**
           * The files to be uploaded.
-          */files:{type:Array},/**
+          */
+        files: {
+          type: Array
+        },
+
+        /**
           * The upload tasks after invoking the Firebase storage put method
           *
-          */uploadTasks:{type:Array,notify:!0,value:[]},/**
+          */
+        uploadTasks: {
+          type: Array,
+          notify: true,
+          value: []
+        },
+
+        /**
           * Uploads the files automatically when the file list has been changed/updated
           *
-          */auto:{type:Boolean,value:!1}},behaviors:[Polymer.FirebaseStorageBehavior],/**
+          */
+        auto: {
+          type: Boolean,
+          value: false
+        }
+      },
+
+      behaviors: [
+        Polymer.FirebaseStorageBehavior
+      ],
+
+      /**
       * @override
-      */get isNew(){return!this.path},/**
+      */
+      get isNew() {
+        return !this.path;
+      },
+
+      /**
       * @override
-      */get zeroValue(){return[]},observers:["__filesChanged(files, auto)"],/**
+      */
+      get zeroValue() {
+        return [];
+      },
+
+      observers: [
+        '__filesChanged(files, auto)'
+      ],
+
+      /**
       * Upload files, update the path and write this.files to that new location.
       *
       * Important note: `this.path` is updated asynchronously.
@@ -95,10 +151,61 @@
       * @return {Promise} A promise that resolves once this.files has been
       *     written to the new path.
       * @override
-      */upload:function(files,path){if(!this.app){this.fire("error",new Error("No app configured!"))}this._putMultipleFirebaseFiles(path||this.path,files&&files.length?files:this.files);if(path){this.path=path}},/**
+      */
+      upload: function(files, path) {
+        if (!this.app) {
+          this.fire('error', new Error('No app configured!'))
+        }
+        this._putMultipleFirebaseFiles(path || this.path, files && files.length ? files : this.files);
+        if (path) {
+          this.path = path;
+        }
+      },
+
+      /**
         * Resets the firebase-storage-multiupload instance
         *
-        */reset:function(){this.path=null;this.clearTasks();return Promise.resolve()},/**
+        */
+      reset: function() {
+        this.path = null;
+        this.clearTasks();
+        return Promise.resolve();
+      },
+
+      /**
         * Resets the upload tasks
         *
-        */clearTasks:function(){this.uploadTasks=[]},_putMultipleFirebaseFiles:function(path,files){this._log("Putting Multiple Firebase files at",path?this.path+"/"+path:this.path);files=files&&"object"===typeof files&&files.name?[files]:files;if(files&&0<files.length){for(var i=0,uploadTask;i<files.length;i++){uploadTask=this.__put(path,files[i],this.metadata?this.metadata:files[i].metadata);uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,function(snapshot){},function(error){this.fire("error",error,{bubble:!1})}.bind(this));this.push("uploadTasks",uploadTask)}}},__filesChanged:function(files,auto){if(auto&&files&&files.length){this.upload(files)}},__pathChanged:function(path,oldPath){if(null!=oldPath){this.clearTasks()}}})})();</script></head><body></body></html>
+        */
+      clearTasks: function() {
+        this.uploadTasks = [];
+      },
+
+      _putMultipleFirebaseFiles: function(path, files) {
+        this._log('Putting Multiple Firebase files at',  path ? this.path + '/' + path : this.path);
+        files = files && typeof files === 'object' && files.name ? [files] : files;
+        if (files && files.length > 0) {
+          for (var i = 0; i < files.length; i++) {
+            var uploadTask = this.__put(path, files[i], this.metadata ? this.metadata : files[i].metadata);
+            uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function(snapshot) {}, function(error) {
+              this.fire('error', error, { bubble: false});
+            }.bind(this));
+            this.push('uploadTasks', uploadTask);
+          }
+        }
+      },
+
+      __filesChanged: function(files, auto) {
+        if (auto && files && files.length) {
+          this.upload(files)
+        }
+      },
+
+      __pathChanged: function(path, oldPath) {
+        if (oldPath != null) {
+          this.clearTasks();
+        }
+      },
+    });
+  })()
+
+</script>
